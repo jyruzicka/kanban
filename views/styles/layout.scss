@@ -1,0 +1,61 @@
+$body-width: 1200px;
+$inside-margin: 20px;
+$useable-width: $body-width - ($inside-margin * 2);
+
+// Set relative width of wip column. Done, backburner are width 1 for this
+$wip-relative-width: 2;
+
+// Set sizes of main columns
+$backburner-width: $useable-width / ($wip-relative-width+2);
+$done-width: $backburner-width;
+$wip-width: $useable-width / (1 + 2 / $wip-relative-width);
+
+$project-border: 2px;
+$project-separator: 2px;
+$project-padding: 1px;
+
+$projects-per-wip: 4;
+$projects-per-done: 1;
+$projects-per-backburner: 1;
+$project-width-wip: ($wip-width - ($project-border + $project-padding + $project-separator) * $projects-per-wip * 2) / $projects-per-wip;
+$project-width-done: ($done-width - ($project-border + $project-padding + $project-separator) * $projects-per-done * 2) / $projects-per-done;
+$project-width-backburner: ($backburner-width - ($project-border + $project-padding + $project-separator) * $projects-per-backburner * 2) / $projects-per-backburner;
+
+
+
+body {
+  width: $body-width;
+  margin: $line-height*2 auto;
+  background: url('/bg.png') repeat;
+}
+
+section {
+  float: left;
+
+  &#backburner{
+    margin-right: $inside-margin;
+    width: $backburner-width;
+
+    .project{ width: $project-width-backburner; }
+  }
+
+  &#done{
+    margin-left: $inside-margin;
+    width: $done-width;
+
+    .project{ width: $project-width-done; }
+  }
+
+  &#wip {
+    width: $wip-width;
+
+    .project{
+      width: $project-width-wip;
+      min-height: $project-width-wip / 1.618;
+    }
+  }
+}
+
+.project {
+  position: relative; // for interior positioning
+}

@@ -1,0 +1,55 @@
+.project {
+  float: left;
+  box-shadow: 2px 2px rgba(0,0,0,0.1);
+
+  border: $project-border solid #555;
+  border-radius: 5px;
+  margin: $project-separator;
+  padding: $project-padding;
+
+  .desc {
+    font-size: 10px;
+  }
+
+  &.project-wip {
+  }
+
+  &:hover {
+    box-shadow: none;
+    border-color: #333;
+  }
+}
+
+@mixin symbol {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  height: 10px;
+  width: 10px;
+}
+
+.hanging {
+  @include symbol;
+  background-image: url('hanging.png');
+  width: 14px;
+}
+
+.deferred {
+  @include symbol;
+  border-top: 3px solid red;
+  background-color: white;
+  padding: 0 1px;
+  font: 9px Helvetica;
+  text-align: center;
+  box-shadow: 2px 2px rgba(0,0,0,0.1);
+}
+
+.waiting-on {
+  @include symbol;
+  background-image: url('waiting.png');
+  height: 11px;
+}
+
+.project-deferred, .project-waiting_on, .project-hanging {
+  opacity: 0.8;
+}

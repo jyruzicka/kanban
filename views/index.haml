@@ -1,0 +1,21 @@
+%a{ href:'/refresh'}
+  .refresh J
+
+%h1 看板 Kanban
+
+%section#backburner
+  %h2 Backburner (#{@size[:backburner]})
+
+  =haml :'_kanban', :locals => {:array => @projects[:backburner], label:'backburner'}
+
+  / Backburner here
+
+%section#wip
+  %h2 Works in progress (<span class="#{@size[:true_wip] > 5 ? "" : "no"}danger">#{@size[:true_wip]}</span> | #{@size[:wip]})
+
+  =haml :'_kanban', :locals => {:array => @projects[:wip], label:'wip'}
+
+%section#done
+  %h2 Done (#{@size[:done]})
+
+  =haml :'_kanban', :locals => {:array => @projects[:done], label:'done'}

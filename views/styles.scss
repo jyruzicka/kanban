@@ -1,0 +1,24 @@
+
+@import 'styles/reset';
+@import 'styles/typo';
+@import 'styles/layout';
+@import 'styles/headers';
+@import 'styles/projects';
+
+
+
+.clear {
+  clear: both;
+}
+
+.danger { color: red;}
+.nodanger { color: green;}
+
+.refresh {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  font-family: "Typicons";
+  font-size: 16px;
+  padding: 1px;
+}

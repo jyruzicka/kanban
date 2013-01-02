@@ -1,0 +1,13 @@
+$font-size: 12px;
+$line-height: $font-size * 1.5;
+
+@font-face{
+  font-family: "Typicons";
+  src: url('/typicons-regular-webfont.woff') format('woff');
+}
+
+html { 
+  font-family: Helvetica;
+  font-size: $font-size;
+  line-height: $line-height;
+}
