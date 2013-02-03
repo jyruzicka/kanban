@@ -1,7 +1,7 @@
 require "sinatra"
 require "haml"
 require "sass"
-require "cache"
+require "jcache"
 require 'date'
 
 Dir['lib/*.rb'].each{ |f| require f }
@@ -11,8 +11,7 @@ class Kanban < Sinatra::Base
   get '/' do
 
     # This is all our data
-    cache = Cache.new('pkfetch')[:data]
-    puts "Cache size: #{cache.size}"
+    cache = JCache::Cache.new('pkfetch')[:data]
 
 
     cache.each do |p|
