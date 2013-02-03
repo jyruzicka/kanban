@@ -14,10 +14,9 @@ class Kanban < Sinatra::Base
     cache = JCache::Cache.new('pkfetch')[:data]
 
 
-    cache.each do |p|
+    cache.select{ |p| p[:kanban_status] == :deferred}.each do |p|
       # For each event in here, let's now set a deferred-until value
-      # if it's deferred.
-      p[:days_until] = (p[:deferred_until].to_date - Date.today).to_i if p[:kanban_status] == :deferred
+      p[:days_until] = (p[:deferred_until].to_date - Date.today).to_i
     end
 
     # Data for viewing
@@ -45,6 +44,7 @@ class Kanban < Sinatra::Base
       @projects[:wip][k] = @projects[:wip][k].sort_by{ |p| p[:kanban_status] == :wip ? 0 : 1 }
     end
 
+    # Auto-colour projects
     lineages = @projects.values.map{ |h| h.keys }.flatten.uniq
     @colours = {}
     increment = lineages.empty? ? 0 : 360 / lineages.size
@@ -57,7 +57,8 @@ class Kanban < Sinatra::Base
   end
 
   get '/refresh' do
-    `/Users/jan/Programs/ruby/organised/pkfetch/pkfetch -f`
+    # Replace with whatever script you use to refresh your data
+    `#{ENV['HOME']}/Programs/ruby/organised/pkfetch/pkfetch -f`
     redirect to '/'
   end
 
