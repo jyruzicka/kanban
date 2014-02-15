@@ -1,20 +1,21 @@
--array.keys.sort.each do |parent|
-  .parent
-    %h3.parent-title=parent
-    -array[parent].each do |p|
-      .project{ style:"background-color:#{@colours[parent]}", class:"project-#{label} project-#{p[:kanban_status]}"}
-        %h4
-          %a{href: "omnifocus:///task/#{p[:id]}"}=p[:name]
-        -if label == 'wip'
-          .desc
-            -if p[:num_tasks] == 1
-              1 task remaining
-            -else
-              #{p[:num_tasks]} tasks remaining
-          -if p[:kanban_status] == :deferred
-            .deferred=p[:days_until]
-          -elsif p[:kanban_status] == :waiting_on
-            .waiting-on
-          -elsif p[:kanban_status] == :hanging
-            .hanging
-    .clear
+-if array
+  -array.keys.sort.each do |parent|
+    .parent
+      %h3.parent-title=parent
+      -array[parent].each do |p|
+        .project{ style:"background-color:#{@colours[parent]}", class:p.css_class}
+          %h4
+            %a{href: "omnifocus:///task/#{p.id}"}=p.name
+          -if p.board == :active
+            .desc
+              -if p.num_tasks == 1
+                1 task remaining
+              -else
+                #{p.num_tasks} tasks remaining
+            -if p.status == "Deferred"
+              .deferred=p.days_deferred
+            -elsif p.status == "Waiting on"
+              .waiting-on
+            -elsif p.status == "Hanging"
+              .hanging
+      .clear

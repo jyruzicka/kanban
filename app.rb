@@ -1,56 +1,46 @@
 require "sinatra"
-require "haml"
 require "sass"
-require "jcache"
-require 'date'
+require "haml"
+require "sqlite3"
+require "date"
 
-Dir['lib/*.rb'].each{ |f| require f }
+Dir['./lib/*.rb'].each{ |f| require f }
 
 class Kanban < Sinatra::Base
   # Index!
   get '/' do
 
-    # This is all our data
-    cache = JCache::Cache.new('pkfetch')[:data]
+    # This is all our data, grabbed from SQLIte
+    Project.load
 
-
-    cache.select{ |p| p[:kanban_status] == :deferred}.each do |p|
-      # For each event in here, let's now set a deferred-until value
-      p[:days_until] = (p[:deferred_until].to_date - Date.today).to_i
-    end
-
-    # Data for viewing
+    # @projects contains all the projects we want to display
+    # It's divided up into the three columns of the kanban board:
+    # :backburner, :active and :completed
+    #
+    # Each of these boards is then divided up based on ancestry...
     @projects = {}
-    @size = {}
 
-    {
-      done: [:done],
-      backburner: [:backburner],
-      wip: [:wip, :deferred, :waiting_on, :hanging]
-    }.each do |key, statuses|
-      buffer = cache.select{ |pj| statuses.include? pj[:kanban_status] }
-      @size[key] = buffer.size
-      
-      # Special wip-only thing to account for multiple statuses
-      if key == :wip
-        @size[:true_wip] = cache.select{ |pj| pj[:kanban_status] == :wip }.size
-      end
-      
-      @projects[key] = buffer.group_by{ |pj| pj[:ancestors].join('&rarr;') }
+    Project.all.group_by(&:board).each do |board, projects|
+      @projects[board] = projects.group_by(&:ancestors_string)
+    end
+    
+    # We would like to sort active projects
+    @projects[:active].each do |ancestry, project_list|
+      @projects[:active][ancestry] = project_list.sort_by{ |p| p.status == "Active" ? 0 : 1 }
     end
 
-    # wip-only task-sorting
-    @projects[:wip].keys.each do |k|
-      @projects[:wip][k] = @projects[:wip][k].sort_by{ |p| p[:kanban_status] == :wip ? 0 : 1 }
-    end
-
+    # @size measures the number of projects on each board
+    boards = [:active, :backburner, :completed]
+    @size = boards.each_with_object({}){ |board, hsh| hsh[board] = Project.select{ |p| p.board == board }.size }
+    @size[:running] = Project.select{ |p| p.status == "Active"}.count
+    
     # Auto-colour projects
     lineages = @projects.values.map{ |h| h.keys }.flatten.uniq
     @colours = {}
     increment = lineages.empty? ? 0 : 360 / lineages.size
 
     lineages.each_with_index do |lin, i|
-      @colours[lin] = "hsl(#{increment*i},100%,80%)"
+     @colours[lin] = "hsl(#{increment*i},100%,80%)"
     end
 
     haml :index
@@ -58,7 +48,7 @@ class Kanban < Sinatra::Base
 
   get '/refresh' do
     # Replace with whatever script you use to refresh your data
-    `#{ENV['HOME']}/Programs/ruby/organised/pkfetch/pkfetch -f`
+    `#{ENV['HOME']}/bin/kanban-fetch`
     redirect to '/'
   end
 
