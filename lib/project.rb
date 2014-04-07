@@ -10,7 +10,7 @@ class Project
   attr_accessor :status
 
   # The number of days until this project becomes active again
-  attr_accessor :days_deferred,
+  attr_accessor :days_deferred
 
   # OmniFocus ID
   attr_accessor :id
