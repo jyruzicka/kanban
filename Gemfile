@@ -6,6 +6,3 @@ gem "sass", "~> 3.2.10"
 
 
 gem "shotgun", "~> 0.9", group: :development
-git "git://github.com/jyruzicka/jcache.git" do
-  gem "jcache"
-end
