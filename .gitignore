@@ -3,3 +3,4 @@
 .rarity
 tmp/*
 tmp
+Gemfile.lock
