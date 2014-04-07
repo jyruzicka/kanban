@@ -1,7 +1,10 @@
 -if array
   -array.keys.sort.each do |parent|
     .parent
-      %h3.parent-title=parent
+      -if array[parent].all?{ |p| ["Deferred", "Waiting on", "Hanging"].include? p.status }
+        %h3.hideable.parent-title=parent
+      -else
+        %h3.parent-title=parent
       -array[parent].each do |p|
         .project{ style:"background-color:#{@colours[parent]}", class:p.css_class}
           %h4

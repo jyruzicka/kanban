@@ -1,5 +1,5 @@
-%a{ href:'/refresh'}
-  .refresh &#128260;
+%a{ href:'/refresh',class:"refresh"}
+  <span class="typcn typcn-refresh"></span>
 
 %h1 看板 Kanban
 
@@ -11,7 +11,7 @@
   / Backburner here
 
 %section#wip
-  %h2 Active (<span class="#{@size[:running] > 5 ? "" : "no"}danger">#{@size[:running]}</span> | #{@size[:active]})
+  %h2 Active (<span class="#{@size[:running] > 5 ? "" : "no"}danger">#{@size[:running]}</span> | #{@size[:active]}) <span class="toggle-hanging typcn typcn-folder-delete"></span>
 
   =haml :'_kanban', :locals => {array: @projects[:active], label: "active"}
 
