@@ -1,5 +1,8 @@
 # Each project square in the kanban is represented by an instance of this class.
 class Project
+  # Where you store the sqlite db
+  DATABASE_LOCATION = File.join(ENV["HOME"], ".kb/test.db")
+
   # The project's name
   attr_accessor :name
 
@@ -50,7 +53,7 @@ class Project
     # Loads the database from file.
     def load
       Project.purge
-      database = SQLite3::Database.new(File.join(ENV["HOME"], ".kb/test.db")) # TODO Constant out
+      database = SQLite3::Database.new(DATABASE_LOCATION)
       database.results_as_hash = true
       database.type_translation = true
       database.execute("SELECT * FROM projects").each do |row|
