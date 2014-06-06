@@ -1,0 +1,5 @@
+database_location: ~/.kb/test.db
+binary_location: ~/bin/kanban-fetch
+binary_options:
+  - -x
+  - "Recurring Tasks,Template"
