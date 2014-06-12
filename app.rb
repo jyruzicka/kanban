@@ -1,3 +1,10 @@
+# Kanban-fetch V1.0.0
+#
+# By Jan-Yves Ruzicka
+# For more information:
+# http://1klb.com/projects/kanban-fetch
+# or see the readme
+
 require "sinatra"
 require "sass"
 require "haml"

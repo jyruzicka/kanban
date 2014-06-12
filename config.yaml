@@ -1,5 +1,39 @@
+#Config.yaml
+# Modify data here to affect the running of the app
+
+#---------------------------------------
+# File locations
+
+# Where the kanban database is stored
 database_location: ~/.kb/test.db
+
+# The location of the kanban-fetch binary, for refreshing
 binary_location: ~/bin/kanban-fetch
+
+# Specify additional arguments to kanban-fetch here
+# (will automatically populate "--out")
 binary_options:
   - -x
   - "Recurring Tasks,Template"
+
+#---------------------------------------
+# Board settings
+
+# How many items maximum in your active board?
+active_limit: 5
+
+#---------------------------------------
+# Column filters
+
+# Which statuses show up in your backburner?
+
+backburner_filter:
+  - On hold
+  - Project deferred
+
+# Which statuses show up in your completed?
+completed_filter:
+  - Done
+  - Dropped
+
+# Everything else shows up in active

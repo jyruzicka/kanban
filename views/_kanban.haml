@@ -1,10 +1,7 @@
 -if array
   -array.keys.sort.each do |parent|
     .parent
-      -if array[parent].all?{ |p| ["Deferred", "Waiting on", "Hanging"].include? p.status }
-        %h3.hideable.parent-title=parent
-      -else
-        %h3.parent-title=parent
+      %h3.parent-title{class: (array[parent].all?(&:hideable?) && "hideable")}=parent
       -array[parent].each do |p|
         .project{ style:"background-color:#{@colours[parent]}", class:p.css_class}
           %h4
@@ -15,7 +12,7 @@
                 1 task remaining
               -else
                 #{p.num_tasks} tasks remaining
-            -if p.status == "Deferred"
+            -if p.deferred?
               .deferred=p.days_deferred
             -elsif p.status == "Waiting on"
               .waiting-on

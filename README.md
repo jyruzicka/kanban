@@ -10,13 +10,7 @@ You'll need a data file to read from. Check out [kanban-fetch](https://github.co
 
 To install this, grab the files, drop them somewhere on your drive and run `bundle install`. You may need to run `gem install bundler` first.
 
-Edit the settings contained in `config.yaml`. The valid options in this YAML file are:
-
-* `database_location`: Where on the drive you keep the SQLite database output by `kanban-fetch`
-* `binary_location`: Where you've installed `kanban-fetch` to.
-* `binary_options`: An array of options to pass to `kanban-fetch` (e.g. excluding projects)
-
-Note that the `--out` flag will be set based on `database_location`, so you don't need to add this flag.
+Edit the settings contained in `config.yaml` as required. You will probably want to modify the "File locations" section, but depending on your requirements you may want to modify other parts of it.
 
 Once you have all that done, start it up with `bundle exec shotgun config.ru`.
 
