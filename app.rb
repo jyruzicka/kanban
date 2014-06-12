@@ -19,7 +19,6 @@ class Kanban < Sinatra::Base
     #
     # Each of these boards is then divided up based on ancestry...
     @projects = {}
-
     Project.all.group_by(&:board).each do |board, projects|
       @projects[board] = projects.group_by(&:ancestors_string)
     end

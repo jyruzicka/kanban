@@ -3,7 +3,7 @@ class Project
   # The project's name
   attr_accessor :name
 
-  # The project's status as string ("Backburner", "Completed", "Active")
+  # The project's status as string ("On hold", "Done", "Active", "Dropped")
   attr_accessor :status
 
   # The number of days until this project becomes active again
@@ -52,14 +52,17 @@ class Project
       Project.purge
       database = SQLite3::Database.new(Options.database_location)
       database.results_as_hash = true
-      database.type_translation = true
       database.execute("SELECT * FROM projects").each do |row|
+        defer_date = row["deferredDate"]
+        defer_date = (defer_date > 0 && Time.at(defer_date))
+        days_deferred = defer_date && (defer_date.to_date - Date.today).to_i
+          
         p = Project.new(
           name:           row["name"],
           status:         row["status"],
-          days_deferred:  row["daysdeferred"],
+          days_deferred:  days_deferred,
           id:             row["ofid"],
-          num_tasks:      row["num_tasks"]
+          num_tasks:      row["numberOfTasks"]
         )
         p.ancestors_string = row["ancestors"]
       end
@@ -100,9 +103,9 @@ class Project
 
   # The board this project should be displayed on.
   def board
-    @board ||= if @status == "Backburner"
+    @board ||= if @status == "On hold"
       :backburner
-    elsif @status == "Completed"
+    elsif ["Done", "Dropped"].include?(@status)
       :completed
     else
       :active
