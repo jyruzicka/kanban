@@ -25,6 +25,19 @@ active_limit: 5
 #---------------------------------------
 # Column filters
 
+##
+# Possible statuses:
+#
+# * On hold: project manually marked "on hold"
+# * Done: project manually marked "done"
+# * Dropped: project manually marked "dropped"
+# * Project deferred: Project has a deferral date in the future
+# * Task deferred: First available task has a deferral date in the future (project is active)
+# * Waiting on: First available task has a context that starts with "Waiting"
+# * Hanging: No available tasks
+# * Active: Project active, first task available
+##
+
 # Which statuses show up in your backburner?
 
 backburner_filter:
