@@ -19,3 +19,10 @@ To make it really seamless, run this whole thing through [pow](http://pow.cx/).
 ## Questions? Comments
 
 Chuck me an [email](mailto:jan@1klb.com) or open a ticket.
+
+## Version history
+
+### 1.0.1 2014-06-16
+
+* Version history started
+* Will now realise the database is missing and give you an informative error rather than cryptic mumbo-jumbo.

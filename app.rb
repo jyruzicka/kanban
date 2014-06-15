@@ -1,4 +1,4 @@
-# Kanban-fetch V1.0.0
+# Kanban-fetch V1.0.1
 #
 # By Jan-Yves Ruzicka
 # For more information:
@@ -19,6 +19,7 @@ class Kanban < Sinatra::Base
 
     # This is all our data, grabbed from SQLIte
     Project.load
+    redirect to "/error" if Project.error?
 
     # @projects contains all the projects we want to display
     # It's divided up into the three columns of the kanban board:
@@ -55,6 +56,10 @@ class Kanban < Sinatra::Base
   get '/refresh' do
     system(Options.binary_location, *Options.binary_options)
     redirect to '/'
+  end
+
+  get "/error" do
+    haml :error
   end
 
   get '/styles.css' do

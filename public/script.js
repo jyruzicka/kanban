@@ -29,5 +29,6 @@ function showInactive() {
 }
 
 document.addEventListener("DOMContentLoaded", function(){
-  document.querySelector(".toggle-hanging").onclick = hideInactive;
+  var toggle = document.querySelector(".toggle-hanging");
+  if (toggle) { toggle.onclick = hideInactive; }
 })

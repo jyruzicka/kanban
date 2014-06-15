@@ -47,9 +47,23 @@ class Project
       @projects.select(&blck)
     end
 
+    def error!
+      @error = true
+    end
+
+    def error?
+      @error
+    end
+
     # Loads the database from file.
     def load
       Project.purge
+      
+      if !File.exists?(Options.database_location)
+        error!
+        return
+      end
+
       database = SQLite3::Database.new(Options.database_location)
       database.results_as_hash = true
       database.execute("SELECT * FROM projects").each do |row|

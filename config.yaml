@@ -15,6 +15,7 @@ binary_location: ~/bin/kanban-fetch
 binary_options:
   - -x
   - "Recurring Tasks,Template"
+  - -r
 
 #---------------------------------------
 # Board settings

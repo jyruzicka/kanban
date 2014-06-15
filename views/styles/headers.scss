@@ -15,6 +15,11 @@ h1 {
   text-align: right;
   border-bottom: 3px solid #555;
   margin-bottom: $line-height;
+  img {
+    display: inline;
+    vertical-align: middle;
+    height: $h1-size;
+  }
 }
 
 h2 {
