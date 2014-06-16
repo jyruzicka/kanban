@@ -21,6 +21,7 @@ binary_options:
 # Board settings
 
 # How many items maximum in your active board?
+# If you go over this number, the active projects counter will turn red
 active_limit: 5
 
 #---------------------------------------
@@ -39,15 +40,18 @@ active_limit: 5
 # * Active: Project active, first task available
 ##
 
-# Which statuses show up in your backburner?
+# Which statuses show up in your backburner column?
 
 backburner_filter:
   - On hold
   - Project deferred
 
-# Which statuses show up in your completed?
+# Which statuses show up in your completed column?
 completed_filter:
   - Done
+
+# Which statuses are hidden entirely?
+hidden_filter:
   - Dropped
 
 # Everything else shows up in active

@@ -145,6 +145,8 @@ class Project
       :backburner
     elsif Options.completed_filter.include?(@status)
       :completed
+    elsif Options.hidden_filter.include?(@status)
+      nil
     else
       :active
     end

@@ -22,6 +22,10 @@ Chuck me an [email](mailto:jan@1klb.com) or open a ticket.
 
 ## Version history
 
+### 1.0.2 2014-06-16
+
+* Particular project statuses can now be hidden entirely by modifying config.yaml
+
 ### 1.0.1 2014-06-16
 
 * Version history started

@@ -1,4 +1,4 @@
-# Kanban-fetch V1.0.1
+# Kanban-fetch V1.0.2
 #
 # By Jan-Yves Ruzicka
 # For more information:
@@ -28,6 +28,7 @@ class Kanban < Sinatra::Base
     # Each of these boards is then divided up based on ancestry...
     @projects = {}
     Project.all.group_by(&:board).each do |board, projects|
+      next if board.nil?
       @projects[board] = projects.group_by(&:ancestors_string)
     end
     
