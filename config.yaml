@@ -16,7 +16,6 @@ binary_options:
   - -x
   - "Recurring Tasks,Template"
   - -r
-
 #---------------------------------------
 # Board settings
 
@@ -38,6 +37,8 @@ active_limit: 5
 # * Waiting on: First available task has a context that starts with "Waiting"
 # * Hanging: No available tasks
 # * Active: Project active, first task available
+#
+# By default, tasks will show up in the "Active" column.
 ##
 
 # Which statuses show up in your backburner column?
