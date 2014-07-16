@@ -67,8 +67,6 @@ class Column
     str << ((limit && ap > limit) ? %|<span class="danger">#{ap}</span>| : ap.to_s)
     str << "|#{total_projects}" if ap != total_projects
     str << ")"
-    puts str
-    puts ap
     str
   end
 end

@@ -14,6 +14,14 @@ module Options
       end
     end
 
+    def ensure_config_exists!
+      if !File.exists?(config_file)
+        raise(KanbanError,
+          reason: "Cannot locate config file.",
+          fix:    "Ensure `config.yaml` exists. You may wish to rename `config.yaml.sample`.")
+      end
+    end
+
     def binary_location
       File.expand_path(options["binary_location"])
     end
@@ -24,6 +32,14 @@ module Options
 
     def binary_options
       (self.options["binary_options"] || []) + ["-o", database_location]
+    end
+
+    def fetch_or_fail key
+      if options.has_key?(key)
+        options[key]
+      else
+        raise(KanbanError, reason: "Cannot find value for key `#{key}`", fix: "Ensure the key `#{key}` exists in `config.yaml`.")
+      end
     end
 
     def method_missing sym, *args

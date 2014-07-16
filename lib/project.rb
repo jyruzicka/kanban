@@ -12,8 +12,8 @@ class Project
   # OmniFocus ID
   attr_accessor :id
 
-  # Array of folders that contain this project
-  attr_accessor :ancestors
+  # Containing folder string (from database)
+  attr_accessor :folder_name
 
   # The number of remaining tasks in this project
   attr_accessor :num_tasks
@@ -21,136 +21,45 @@ class Project
   # The parent folder
   attr_accessor :folder
 
-  @projects = []
   class << self
-    # Array of all projects
-    attr_accessor :projects
-
-    # Add this project to the global database.
-    # @param p [Project] The project to add to the database.
-    def add p
-      @projects << p
-    end
-
-    # Remove all projects from the database
-    def purge
-      @projects = []
-    end
-
-    # Returns array all projects.
-    # Same as calling +Project.projects+.
-    def all
-      @projects
-    end
-
-    # Return all projects which fulfil a given condition
-    # @param blck [Proc] filter proc.
-    # @return [Array] all projects for which +blck[p]+ returns true.
-    def select &blck
-      @projects.select(&blck)
-    end
-
-    # Return projects, grouped by board and then by ancestry
-    # Active projects are also sorted according to active status
-    def grouped_by_board_and_ancestry
-      @grouped_ba ||= begin
-        h = Project.all.group_by(&:board).each_with_object({}) do |(board, projects),hash|
-          hash[board] = projects.group_by(&:ancestors_string) unless board.nil?
-        end
-
-        # We would like to sort active projects
-        h[:active].each do |ancestry, project_list|
-          h[:active][ancestry] = project_list.sort_by{ |p| p.status == "Active" ? 0 : 1 }
-        end
-        h
-      end
-    end
-
-    # An error occured on loading
-    def error!
-      @error = true
-    end
-
-    # Did an error occur on loading?
-    def error?
-      @error
-    end
-
     # Loads the database from file.
     def load_from_database
-      if File.exists?(Options.database_location)
-        projects = []
-        database = SQLite3::Database.new(Options.database_location)
-        database.results_as_hash = true
-        database.execute("SELECT * FROM projects").each do |row|
-          ## Custom actions
-          # Defer date
-          defer_date = row["deferredDate"]
-          defer_date = (defer_date > 0 && Time.at(defer_date))
-          days_deferred = defer_date && (defer_date.to_date - Date.today).to_i
-
-          # Status
-          status = row["status"]
-          if status == "Deferred"
-            if row["deferralType"] == "task"
-              status = "Task deferred"
-            else
-              status = "Project deferred"
-            end
-          end
-            
-          p = Project.new(
-            name:           row["name"],
-            status:         status,
-            days_deferred:  days_deferred,
-            id:             row["ofid"],
-            num_tasks:      row["numberOfTasks"]
-          )
-          p.ancestors_string = row["ancestors"]
-          projects << p
-        end
-        projects
-      else
-        error!
-      end
-    end
-
-    def load
-      Project.purge
-      
       if !File.exists?(Options.database_location)
-        error!
-        return
+        raise KanbanError,
+              reason: "Cannot find database at `#{Options.database_location}`",
+              fix:    "Make sure `config.yaml`'s value `database_location` is pointed at your database."
       end
 
+      projects = []
       database = SQLite3::Database.new(Options.database_location)
       database.results_as_hash = true
       database.execute("SELECT * FROM projects").each do |row|
-        ## Custom actions
-        # Defer date
-        defer_date = row["deferredDate"]
-        defer_date = (defer_date > 0 && Time.at(defer_date))
-        days_deferred = defer_date && (defer_date.to_date - Date.today).to_i
-
-        # Status
-        status = row["status"]
-        if status == "Deferred"
-          if row["deferralType"] == "task"
-            status = "Task deferred"
-          else
-            status = "Project deferred"
-          end
-        end
-          
-        p = Project.new(
-          name:           row["name"],
-          status:         status,
-          days_deferred:  days_deferred,
-          id:             row["ofid"],
-          num_tasks:      row["numberOfTasks"]
-        )
-        p.ancestors_string = row["ancestors"]
+        projects << Project.from_sqlite(row)
       end
+      projects
+    end
+
+    def from_sqlite(row)
+      p = Project.new(
+        name: row["name"],
+        id: row["ofid"],
+        num_tasks: row["numberOfTasks"],
+        folder_name: row["ancestors"]
+      )
+
+      p.status = if row["status"] == "Deferred"
+        row["deferralType"] == "task" ? "Task deferred" : "Project deferred"
+      else
+        row["status"]
+      end
+
+      p.days_deferred = if row["deferredDate"] > 0
+        (Time.at(row["deferredDate"]).to_date - Date.today).to_i
+      else
+        nil
+      end
+
+      p
     end
   end
 
@@ -160,32 +69,19 @@ class Project
   # @param days_deferred [int] the number of days until this project is active again
   # @param id [String] the OmniFocus ID of the project
   # @param num_tasks [int] the number of remaining tasks this project contains
-  def initialize(name:"",status:"", days_deferred:-1, id:nil, num_tasks:1)
+  def initialize(name:"",status:"", days_deferred:-1, id:nil, num_tasks:1,folder_name:"")
     self.name = name
     self.status = status
     self.days_deferred = days_deferred
     self.id = id
     self.num_tasks = num_tasks
-    Project.add(self)
+    self.folder_name = folder_name
   end
 
   # Is this project deferred?
   def deferred?
     @deferred ||= (status.end_with?("deferred") || status.end_with?("Deferred"))
   end
-
-  # Set the ancestors array from a pipe-delimited string
-  # @param str [String] A pipe-delimited string of ancestor names
-  def ancestors_string= str
-    @ancestors = str.split("|")
-  end
-
-  # Outputs a string of ancestors, separated by the html Right arrow character
-  def ancestors_string
-    @ancestors.join(" &rarr; ")
-  end
-
-  alias_method :folder_name, :ancestors_string
 
   # A space-separated list of classes to add to the project's corresponding html
   # element.
@@ -220,18 +116,5 @@ class Project
 
   def active?
     !background?
-  end
-
-  # The column this project should be displayed on.
-  def column
-    @column ||= if Options.backburner_filter.include?(@status)
-      :backburner
-    elsif Options.completed_filter.include?(@status)
-      :completed
-    elsif Options.hidden_filter.include?(@status)
-      nil
-    else
-      :active
-    end
   end
 end

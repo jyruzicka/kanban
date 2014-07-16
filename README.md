@@ -16,15 +16,22 @@ Once you have all that done, start it up with `bundle exec shotgun config.ru`.
 
 To make it really seamless, run this whole thing through [pow](http://pow.cx/).
 
-## Questions? Comments
+## Questions? Comments?
 
 Chuck me an [email](mailto:jan@1klb.com) or open a ticket.
 
 ## Version history
 
+### 2.0.0 2014-07-16
+
+* Big rehash! config.yaml has been completely overhauled, most of `app.rb`'s logic has been pushed to individual classes, and the whole thing has just been made *nicer*.
+* The app no longer ships with `config.yaml`: you'll have to copy over `config.yaml.sample`. This means any changes you make to your own `config.yaml` won't be squashed whenever you run a pull.
+* Suddenly a lot easier to customise everything. See the config file for a more comprehensive overview, but you can now customise what projects are considered "background", which columns are expanded, and so on.
+* Changes this big will probably introduce a bunch of bugs. Chuck them on the issue tracker and I can make sure I fix them.
+
 ### 1.0.2 2014-06-16
 
-* Particular project statuses can now be hidden entirely by modifying config.yaml
+* Particular project statuses can now be hidden entirely by modifying `config.yaml`.
 
 ### 1.0.1 2014-06-16
 

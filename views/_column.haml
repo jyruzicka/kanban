@@ -2,5 +2,7 @@
   %h2
     =column.name
     =column.count
+    -if !column.background.empty?
+      %span.typcn.typcn-folder-delete.toggle-hanging
   -column.folders.each do |f|
     =haml :_folder, locals: {folder: f}

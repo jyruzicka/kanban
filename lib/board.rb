@@ -2,15 +2,15 @@
 class Board
   attr_accessor :columns
 
-  def initialize
+  def initialize(projects)
     @columns = []
     populate_columns
+    add_projects(projects) if projects
   end
 
   # Populates columns based on YAML data (config file)
   def populate_columns
-    raw_column_data = Options.columns # TODO fetch_or_fail
-    raise(KanbanError, reason: "Cannot find column data", fix: "Ensure the key `columns` exists in `config.yaml`.") unless raw_column_data
+    raw_column_data = Options.fetch_or_fail("columns")
 
     raw_column_data.each do |raw_column|
       column = Column.from_hash raw_column
