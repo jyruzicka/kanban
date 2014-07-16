@@ -1,0 +1,6 @@
+%section{id: column.name, class: "width-#{column.width}"}
+  %h2
+    =column.name
+    =column.count
+  -column.folders.each do |f|
+    =haml :_folder, locals: {folder: f}

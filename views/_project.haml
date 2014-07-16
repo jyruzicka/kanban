@@ -1,0 +1,15 @@
+.project{ style:"background-color:#{project.colour}", class:project.css_class}
+  %h4
+    %a{href: "omnifocus:///task/#{project.id}"}=project.name
+  -if project.expanded?
+    .desc
+      -if project.num_tasks == 1
+        1 task remaining
+      -else
+        #{project.num_tasks} tasks remaining
+    -if project.deferred?
+      .deferred=project.days_deferred
+    -elsif project.status == "Waiting on"
+      .waiting-on
+    -elsif project.status == "Hanging"
+      .hanging

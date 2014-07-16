@@ -1,0 +1,27 @@
+body {
+  width: $body-width;
+  margin: $line-height*2 auto;
+  background: url('/bg.png') repeat;
+}
+
+.width-1{ width: $column-width; }
+.width-2{
+  width: $column-width * 2 + $inside-margin;
+
+  .project {
+    width: $column-width + ($inside-margin / 2) - 4px;
+
+    &.expanded {
+      width: ($column-width * 2 + $inside-margin) / 4 - 4px;
+    }
+  }
+}
+
+section {
+  float: left;
+  margin-right: $inside-margin;
+  margin-left: $inside-margin;
+
+  &:first-child{ margin-left: 0; }
+  &:last-child{ margin-right: 0; }
+}

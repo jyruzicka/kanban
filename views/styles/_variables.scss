@@ -1,0 +1,17 @@
+$body-width: 1200px;
+$inside-margin: 10px;
+$columns: 4;
+
+$useable-width: $body-width - ( ( $columns - 1 ) * 2 * $inside-margin);
+$column-width: $useable-width / $columns;
+
+$body-width: 1200px;
+$inside-margin: 10px;
+$useable-width: $body-width - ($inside-margin * 4);
+
+$project-border: 2px;
+$project-separator: 2px;
+$project-padding: 1px;
+
+$font-size: 12px;
+$line-height: $font-size * 1.5;

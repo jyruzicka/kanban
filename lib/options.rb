@@ -2,8 +2,16 @@ require "YAML"
 
 module Options
   class << self
+    def config_file
+      @config_file ||= File.join(__dir__,"../config.yaml")
+    end
+
     def options
-      @config_options ||= YAML.load_file(File.join(__dir__,"../config.yaml"))
+      @config_options ||= if File.exists?(config_file)
+        YAML.load_file(config_file)
+      else
+        {}
+      end
     end
 
     def binary_location

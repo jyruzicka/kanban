@@ -16,51 +16,49 @@ Dir['./lib/*.rb'].each{ |f| require f }
 class Kanban < Sinatra::Base
   # Index!
   get '/' do
+    # Error check
+    if !File.exists?(Options.config_file)
+      @reason = "Cannot locate config file."
+      @fix = "Ensure `config.yaml` exists. You may wish to rename `config.yaml.sample`."
+    else
+      # This is all our data, grabbed from SQLIte
+      projects = Project.load_from_database
+      @board = Board.new
+      @board.add_projects(projects)
+      
+    #   Project.load
+    #   if Project.error?
+    #     @reason = "Cannot locate database: `#{Options.database_location}`."
+    #     @fix = "Edit `database_location` in `config.yaml`. Are you sure you have it pointed at the right location?"
+    #   end
+    # end
 
-    # This is all our data, grabbed from SQLIte
-    Project.load
-    redirect to "/error" if Project.error?
+    # if @reason
+    #   haml :error
+    # else
+    #   # @projects contains all the projects we want to display
+    #   # It's divided up into the three columns of the kanban board:
+    #   # :backburner, :active and :completed
+    #   #
+    #   # Each of these boards is then divided up based on ancestry
+    #   @projects = Project.grouped_by_board_and_ancestry
 
-    # @projects contains all the projects we want to display
-    # It's divided up into the three columns of the kanban board:
-    # :backburner, :active and :completed
-    #
-    # Each of these boards is then divided up based on ancestry...
-    @projects = {}
-    Project.all.group_by(&:board).each do |board, projects|
-      next if board.nil?
-      @projects[board] = projects.group_by(&:ancestors_string)
+    #   # @size measures the number of projects on each board
+    #   boards = [:active, :backburner, :completed]
+    #   @size = boards.each_with_object({}){ |board, hsh| hsh[board] = Project.select{ |p| p.board == board }.size }
+    #   @size[:running] = Project.select{ |p| p.status == "Active"}.count
+      
+    #   # Auto-colour projects
+    #   ancestries = @projects.values.map{ |h| h.keys }.flatten.uniq #Array of every ancestry
+    #   @colours = ColourMap.new(ancestries).to_hash
+      
+      haml :index
     end
-    
-    # We would like to sort active projects
-    @projects[:active].each do |ancestry, project_list|
-      @projects[:active][ancestry] = project_list.sort_by{ |p| p.status == "Active" ? 0 : 1 }
-    end
-
-    # @size measures the number of projects on each board
-    boards = [:active, :backburner, :completed]
-    @size = boards.each_with_object({}){ |board, hsh| hsh[board] = Project.select{ |p| p.board == board }.size }
-    @size[:running] = Project.select{ |p| p.status == "Active"}.count
-    
-    # Auto-colour projects
-    lineages = @projects.values.map{ |h| h.keys }.flatten.uniq
-    @colours = {}
-    increment = lineages.empty? ? 0 : 360 / lineages.size
-
-    lineages.each_with_index do |lin, i|
-     @colours[lin] = "hsl(#{increment*i},100%,80%)"
-    end
-
-    haml :index
   end
 
   get '/refresh' do
     system(Options.binary_location, *Options.binary_options)
     redirect to '/'
-  end
-
-  get "/error" do
-    haml :error
   end
 
   get '/styles.css' do

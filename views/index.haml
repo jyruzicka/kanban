@@ -3,19 +3,7 @@
 
 %h1 看板 Kanban
 
-%section#backburner
-  %h2 Backburner (#{@size[:backburner]})
-
-  =haml :'_kanban', :locals => {array: @projects[:backburner], label: "backburner"}
-
-  / Backburner here
-
-%section#wip
-  %h2 Active (<span class="#{@size[:running] > Options.active_limit ? "" : "no"}danger">#{@size[:running]}</span> | #{@size[:active]}) <span class="toggle-hanging typcn typcn-folder-delete"></span>
-
-  =haml :'_kanban', :locals => {array: @projects[:active], label: "active"}
-
-%section#done
-  %h2 Completed (#{@size[:completed]})
-
-  =haml :'_kanban', :locals => {array: @projects[:completed], label: "completed"}
+.columns
+  -@board.columns.each do |col|
+    =haml :_column, locals: {column: col}
+.clear

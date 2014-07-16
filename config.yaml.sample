@@ -1,4 +1,7 @@
 #Config.yaml
+#
+# Rename this to config.yaml to use this in your app
+# 
 # Modify data here to affect the running of the app
 
 #---------------------------------------
@@ -12,6 +15,8 @@ binary_location: ~/bin/kanban-fetch
 
 # Specify additional arguments to kanban-fetch here
 # (will automatically populate "--out")
+#
+# Full arguments can be found by running `kanban-fetch --help`
 binary_options:
   - -x
   - Recurring Tasks,Template
@@ -21,6 +26,7 @@ binary_options:
 
 # How many items maximum in your active board?
 # If you go over this number, the active projects counter will turn red
+# This does not limit the number of projects kanban will show
 active_limit: 5
 
 #---------------------------------------
@@ -42,25 +48,6 @@ active_limit: 5
 ##
 
 # Which statuses show up in your backburner column?
-
-columns:
-  - name: Backburner
-    include:
-      - On hold
-      - Project deferred
-  - name: Active
-    width: 2
-    include:
-      - Active
-    background:
-      - Waiting on
-      - Hanging
-      - Task deferred
-    limit: 5
-    expanded: true
-  - name: Completed
-    include:
-      - Done
 
 backburner_filter:
   - On hold

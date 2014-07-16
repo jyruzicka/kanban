@@ -2,8 +2,16 @@
   %img{src: "gojira.gif"}
   板 Kanban
 
-%h2 Error
+%h2 An error occured
+
+%h3 Error message:
 
 .hero
   :markdown
-    Cannot locate database: `#{Options.database_location}`. Are you sure you have `config.yaml` pointed at the right location?
+    #{@reason}
+
+%h3 Possible fix:
+
+.hero
+  :markdown
+    #{@fix}

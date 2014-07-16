@@ -7,31 +7,31 @@
 }
 
 .project {
+  position: relative;
   float: left;
   box-shadow: 2px 2px rgba(0,0,0,0.1);
+  box-sizing: border-box;
 
   border: $project-border solid #555;
   border-radius: 5px;
   margin: $project-separator;
   padding: $project-padding;
+  width: $column-width - 4px;
 
-  .desc {
-    font-size: 10px;
+  &.expanded{
+    width: ($column-width / 2) - 4px;
+    min-height: $column-width / 2 / 1.618; //φ
   }
 
-  //------------------------------------------------------------------------------
-  // Types of project
-  &.deferred, &.waiting-on, &.hanging {
-    opacity: 0.8;
-  }
+  &.background { opacity: 0.8; }
 
-  //------------------------------------------------------------------------------
-  // Hover goes after opacity definition above
   &:hover {
     box-shadow: none;
     border-color: #333;
     opacity: 1;
   }
+
+  .desc { font-size: 10px; }
 
   //------------------------------------------------------------------------------
   //Symbols that appear in project boxes

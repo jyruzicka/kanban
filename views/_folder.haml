@@ -1,0 +1,5 @@
+.parent
+  %h3.parent-title{class: folder.css_classes}=folder.name
+  -folder.sorted_projects.each do |project|
+    =haml :_project, locals: {project: project}
+  .clear

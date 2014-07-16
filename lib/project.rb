@@ -18,6 +18,9 @@ class Project
   # The number of remaining tasks in this project
   attr_accessor :num_tasks
 
+  # The parent folder
+  attr_accessor :folder
+
   @projects = []
   class << self
     # Array of all projects
@@ -47,15 +50,71 @@ class Project
       @projects.select(&blck)
     end
 
+    # Return projects, grouped by board and then by ancestry
+    # Active projects are also sorted according to active status
+    def grouped_by_board_and_ancestry
+      @grouped_ba ||= begin
+        h = Project.all.group_by(&:board).each_with_object({}) do |(board, projects),hash|
+          hash[board] = projects.group_by(&:ancestors_string) unless board.nil?
+        end
+
+        # We would like to sort active projects
+        h[:active].each do |ancestry, project_list|
+          h[:active][ancestry] = project_list.sort_by{ |p| p.status == "Active" ? 0 : 1 }
+        end
+        h
+      end
+    end
+
+    # An error occured on loading
     def error!
       @error = true
     end
 
+    # Did an error occur on loading?
     def error?
       @error
     end
 
     # Loads the database from file.
+    def load_from_database
+      if File.exists?(Options.database_location)
+        projects = []
+        database = SQLite3::Database.new(Options.database_location)
+        database.results_as_hash = true
+        database.execute("SELECT * FROM projects").each do |row|
+          ## Custom actions
+          # Defer date
+          defer_date = row["deferredDate"]
+          defer_date = (defer_date > 0 && Time.at(defer_date))
+          days_deferred = defer_date && (defer_date.to_date - Date.today).to_i
+
+          # Status
+          status = row["status"]
+          if status == "Deferred"
+            if row["deferralType"] == "task"
+              status = "Task deferred"
+            else
+              status = "Project deferred"
+            end
+          end
+            
+          p = Project.new(
+            name:           row["name"],
+            status:         status,
+            days_deferred:  days_deferred,
+            id:             row["ofid"],
+            num_tasks:      row["numberOfTasks"]
+          )
+          p.ancestors_string = row["ancestors"]
+          projects << p
+        end
+        projects
+      else
+        error!
+      end
+    end
+
     def load
       Project.purge
       
@@ -110,13 +169,6 @@ class Project
     Project.add(self)
   end
 
-  # Can this project be hidden?
-  # Applies to any project which is "active" but cannot be acted on right now
-  # e.g. deferred, waiting on, hanginging
-  def hideable?
-    @hideable ||= ["Task deferred", "Project deferred", "Waiting on", "Hanging"].include?(status)
-  end
-
   # Is this project deferred?
   def deferred?
     @deferred ||= (status.end_with?("deferred") || status.end_with?("Deferred"))
@@ -133,15 +185,46 @@ class Project
     @ancestors.join(" &rarr; ")
   end
 
+  alias_method :folder_name, :ancestors_string
+
   # A space-separated list of classes to add to the project's corresponding html
   # element.
   def css_class
-    @css_class ||= ["project", status.gsub(' ','-').downcase, (hideable? ? "hideable" : nil)].compact.join(" ")
+    @css_class ||= begin
+      classes = ["project"]
+      classes << status.gsub(' ','-').downcase
+      classes << "expanded" if expanded?
+      classes << "background" if background?
+      classes.join(" ")
+    end
   end
 
-  # The board this project should be displayed on.
-  def board
-    @board ||= if Options.backburner_filter.include?(@status)
+  # Colour is determined by the folder containing the project
+  def colour
+    if folder
+      folder.colour
+    else
+      "#333"
+    end
+  end
+
+  # Is the project expanded? Determined by its folder
+  def expanded?
+    folder ? folder.expanded? : false
+  end
+
+  # Is this project background?
+  def background?
+    folder ? folder.considers_background?(self) : false
+  end
+
+  def active?
+    !background?
+  end
+
+  # The column this project should be displayed on.
+  def column
+    @column ||= if Options.backburner_filter.include?(@status)
       :backburner
     elsif Options.completed_filter.include?(@status)
       :completed
