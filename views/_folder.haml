@@ -1,5 +1,5 @@
 .parent
-  %h3.parent-title{class: folder.css_classes}=folder.name
+  %h3.parent-title{class: folder.css_classes}=folder.display_name
   -folder.sorted_projects.each do |project|
     =haml :_project, locals: {project: project}
   .clear

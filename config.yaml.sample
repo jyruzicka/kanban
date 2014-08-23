@@ -20,6 +20,9 @@ binary_options:
 #---------------------------------------
 # Board settings
 
+# What characters do you want separating folders and projects in the kanban board?
+separator: →
+
 # Define your columns in the columns variable below.
 # Each column is one "block" wide by default, and the board can hold four "blocks" worth of columns.
 # Each column can also have:

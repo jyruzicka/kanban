@@ -34,6 +34,18 @@ module Options
       (self.options["binary_options"] || []) + ["-o", database_location]
     end
 
+    def has_key? key
+      options.has_key?(key)
+    end
+
+    def [] key
+      if options.has_key?(key)
+        options[key]
+      else
+        nil
+      end
+    end
+
     def fetch_or_fail key
       if options.has_key?(key)
         options[key]

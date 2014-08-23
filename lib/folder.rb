@@ -7,6 +7,14 @@ class Folder
     self << project if project
   end
 
+  def display_name
+    if Options.has_key? "separator"
+      @name.gsub("|",Options["separator"])
+    else
+      @name
+    end
+  end
+
   def css_classes
     if @projects.all?(&:background?)
       "background"
