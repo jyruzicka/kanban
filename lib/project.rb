@@ -49,6 +49,8 @@ class Project
 
       p.status = if row["status"] == "Deferred"
         row["deferralType"] == "task" ? "Task deferred" : "Project deferred"
+      elsif row["status"] == "Active" && row["numberOfTasks"] == 0
+        "Hanging"
       else
         row["status"]
       end
